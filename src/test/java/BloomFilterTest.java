@@ -6,11 +6,13 @@ import com.sangupta.murmur.Murmur3;
 import net.jqwik.api.*;
 import net.jqwik.api.arbitraries.IntegerArbitrary;
 import net.jqwik.api.constraints.NotEmpty;
+import net.jqwik.api.constraints.Size;
 import net.jqwik.api.constraints.Unique;
 import org.assertj.core.api.*;
 import org.assertj.core.data.*;
 
 import java.util.List;
+import java.util.Set;
 
 class BloomFilterTest {
 
@@ -44,7 +46,36 @@ class BloomFilterTest {
     }
 
     @Property
-    void falsePositiveCounts(@ForAll("bloomfilters") BloomFilter filter, @ForAll @Unique List< @NotEmpty byte[]> elements ) {
+    boolean unionModelsSet(@ForAll("bloomfilters") BloomFilter filter1, @ForAll Set< @NotEmpty byte[]> elements1, @ForAll Set< @NotEmpty byte[]> elements2) {
+        var filter2 = new BloomFilter(filter1.getnBytes());
+
+        elements1.forEach(filter1::put);
+        elements2.forEach(filter2::put);
+
+        elements1.addAll(elements2);
+        var allElements = elements1;
+
+        var filterUnion = filter1.union(filter2);
+
+        for (var e : allElements) {
+            if (!filterUnion.mightContain(e)) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    @Property
+    void falsePositiveCounts(@ForAll("bloomfilters") BloomFilter filter, @ForAll @Unique List<byte[]> elements ) {
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+    @Property
+    void falsePositiveCounts2(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500);
         for (var e : elements) {
             Statistics.collect(filter.mightContain(e) ? "false positives" : null);
             filter.put(e);
@@ -52,14 +83,6 @@ class BloomFilterTest {
     }
 
 
-    /*@Provide
-    Arbitrary<BloomFilter> bloomfilters() {
-        Arbitrary<Integer> sizes = Arbitraries.integers().between(1,100000);
-        return sizes.flatMap(size -> {
-            var hashNums = Arbitraries.integers().between(1,size);
-            return hashNums.map(hashNum -> new BloomFilter(size, hashNum));
-        });
-    }*/
     @Provide
     Arbitrary<BloomFilter> bloomfilters() {
         Arbitrary<Integer> sizes = Arbitraries.integers().between(1, Integer.MAX_VALUE / 8);
