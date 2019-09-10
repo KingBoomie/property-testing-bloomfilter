@@ -19,7 +19,16 @@ public class BloomFilter {
         this.nBytes = nBytes;
         this.numHashes = 4;
 
-        this.data = new BitSet(nBytes *8);
+        this.data = new BitSet(nBytes * 8);
+
+        try { this.hasher = MessageDigest.getInstance("SHA-256"); } catch (NoSuchAlgorithmException ignored) {}
+
+    }
+    public BloomFilter(int nBytes, int numHashes) {
+        this.nBytes = nBytes;
+        this.numHashes = numHashes;
+
+        this.data = new BitSet(nBytes * 8);
 
         try { this.hasher = MessageDigest.getInstance("SHA-256"); } catch (NoSuchAlgorithmException ignored) {}
 

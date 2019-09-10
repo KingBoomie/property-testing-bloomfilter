@@ -75,13 +75,64 @@ class BloomFilterTest {
         }
     }
     @Property
-    void falsePositiveCounts2(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
-        var filter = new BloomFilter(500);
+    void falsePositiveCounts1(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 1);
         for (var e : elements) {
             Statistics.collect(filter.mightContain(e) ? "false positives" : null);
             filter.put(e);
         }
     }
+    @Property
+    void falsePositiveCounts2(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 2);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+    @Property
+    void falsePositiveCounts4(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 4);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+    @Property
+    void falsePositiveCounts8(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 8);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+    @Property
+    void falsePositiveCounts12(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 12);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+
+    @Property
+    void falsePositiveCounts16(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 16);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+
+    @Property
+    void falsePositiveCounts32(@ForAll @Size(min=499, max=500) @Unique List<byte[]> elements ) {
+        var filter = new BloomFilter(500, 32);
+        for (var e : elements) {
+            Statistics.collect(filter.mightContain(e) ? "false positives" : null);
+            filter.put(e);
+        }
+    }
+
     @Property
     void statsFalsePositiveStrings(@ForAll @Size(min=499, max=500) List< @Unique @AlphaChars String> elements) {
         var filter = new BloomFilter(500);
