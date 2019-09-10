@@ -5,6 +5,7 @@ import com.sangupta.murmur.Murmur2;
 import com.sangupta.murmur.Murmur3;
 import net.jqwik.api.*;
 import net.jqwik.api.arbitraries.IntegerArbitrary;
+import net.jqwik.api.constraints.AlphaChars;
 import net.jqwik.api.constraints.NotEmpty;
 import net.jqwik.api.constraints.Size;
 import net.jqwik.api.constraints.Unique;
@@ -79,6 +80,15 @@ class BloomFilterTest {
         for (var e : elements) {
             Statistics.collect(filter.mightContain(e) ? "false positives" : null);
             filter.put(e);
+        }
+    }
+    @Property
+    void statsFalsePositiveStrings(@ForAll @Size(min=499, max=500) List< @Unique @AlphaChars String> elements) {
+        var filter = new BloomFilter(500);
+        for (var e : elements) {
+            var bytes = e.getBytes();
+            Statistics.collect(filter.mightContain(bytes) ? "false positives" : null);
+            filter.put(bytes);
         }
     }
 
